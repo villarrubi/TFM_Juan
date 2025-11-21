@@ -16,11 +16,11 @@ public class GameConstants {
         new Color(46, 204, 113),   // Verde esmeralda
         new Color(241, 196, 15),   // Amarillo dorado
         new Color(231, 76, 60),    // Rojo coral
-        new Color(155, 89, 182)    // PÃºrpura
+        new Color(155, 89, 182)    // Púrpura
     };
     
     public static final String[] COLOR_NAMES = {
-        "Verde", "Amarillo", "Rojo", "PÃºrpura"
+        "Verde", "Amarillo", "Rojo", "Púrpura"
     };
     
     // Colores del tema
@@ -34,10 +34,10 @@ public class GameConstants {
     // Nombres de territorios
     public static final String[] TERRITORY_NAMES = {
         "Lusitania", "Tarraconensis", "Baetica", "Mauritania", "Ãfrica", 
-        "Cirenaica", "Egipto", "Arabia", "Judea", "Siria", "Asia", "Ponto", 
+        "Cirenaica", "Egipto", "Judea", "Siria", "Asia", "Ponto", 
         "Armenia", "Grecia", "Macedonia", "Tracia", "Dacia", "Moesia", 
         "Dalmacia", "Panonia", "Magna grecia", "Roma", "Galia Cisalpina", "Raetia",
-        "Germania", "Narbonense", "Galia", "Britania"
+        "Germania", "Narbonense", "Galia", "Britania", "Belgica"
     };
     
     // Coordenadas X de los territorios
@@ -49,8 +49,7 @@ public class GameConstants {
         {160, 210, 210, 290, 290, 160}, // Ãfrica
         {290, 300, 320, 370, 370, 290}, // Cirenaica
         {370, 460, 450, 370}, // Egipto
-        {450, 470, 480, 470, 500, 450}, // Arabia
-        {450, 460, 470, 460}, // Judea
+        {450, 460, 450, 480, 480, 460}, // Judea
         {460, 480, 490, 480, 460}, // Siria
         {460, 510, 490, 410, 380, 370, 370, 400}, // Asia
         {380, 410, 430, 450, 470, 490, 480, 410, 380}, // Ponto
@@ -68,8 +67,9 @@ public class GameConstants {
         {250, 250, 235, 235, 180, 180, 230, 230}, // Raetia
         {235, 235, 200, 200, 180, 160, 160, 170, 180}, // Germania
         {120, 140, 160, 190, 190, 180, 160, 120}, // Narbonense
-        {90,  120, 120, 160, 185, 170, 160, 160, 180, 180, 200, 200, 180, 160, 160, 140, 125, 110, 70, 70, 90}, // Galia
+        {90,  120, 120, 160, 185, 170, 160, 160, 180, 180, 200, 125, 110, 70, 70, 90}, // Galia
         {60, 60, 90, 120, 120}, // Britania
+        {200, 200, 180, 160, 160, 140, 125} // Belgica
     };
     
     // Coordenadas Y de los territorios
@@ -81,8 +81,7 @@ public class GameConstants {
         {430, 430, 480, 530, 550, 550}, // Ãfrica
         {530, 510, 500, 530, 550, 550}, // Cirenaica
         {530, 530, 550, 550}, // Egipto
-        {540, 490, 490, 540, 550, 550}, // Arabia
-        {530, 530, 490, 490}, // Judea
+        {530, 530, 560, 560, 490, 490}, // Judea
         {490, 490, 460, 420, 450}, // Siria
         {450, 360, 360, 380, 370, 370, 440, 460}, // Asia
         {360, 360, 340, 340, 360, 360, 370, 380, 370, 370}, // Ponto
@@ -100,11 +99,78 @@ public class GameConstants {
         {270, 195, 195, 210, 240, 250, 250, 270, 270}, // Raetia
         {195, 210, 230, 180, 175, 130, 120, 110, 110}, // Germania
         {310, 310, 320, 300, 280, 290, 300, 300}, // Narbonense
-        {310, 310, 300, 300, 290, 260, 260, 250, 250, 240, 230, 185, 175, 130, 120, 160, 180, 210, 220, 250, 310}, // Galia
-        {180, 60, 60, 120, 160} // Britania
+        {310, 310, 300, 300, 290, 260, 260, 250, 250, 240, 230, 180, 210, 220, 250, 310}, // Galia
+        {180, 60, 60, 120, 160}, // Britania
+        {230, 185, 175, 130, 120, 160, 180} // Belgica
+    };
+    
+    // ==================== TERRITORIOS DECORATIVOS ====================
+    // Nombres de territorios decorativos (no conquistables)
+    public static final String[] DECORATIVE_NAMES = {
+        "Este",      // Zona este de europa
+        
+    };
+    
+    // Coordenadas X de territorios decorativos
+    public static final int[][] DECORATIVE_X_COORDS = {
+        {600, 600, 480, 480, 310, 180, 310}, // Este
+        
+    };
+    
+    // Coordenadas Y de territorios decorativos
+    public static final int[][] DECORATIVE_Y_COORDS = {
+        {0, 550, 550, 410, 330, 110, 0}, // Este
+    };
+    
+    // ==================== RUTAS MARÍTIMAS ====================
+    // Estructura: cada ruta tiene territorio origen, territorio destino, y puntos intermedios
+    // Los puntos intermedios permiten crear rutas curvas más realistas
+    
+    // Información de rutas: {territorio_origen, territorio_destino, [[puntos_x], [puntos_y]]}
+    public static class MaritimeRouteData {
+        public String from;
+        public String to;
+        public int[] xPoints;
+        public int[] yPoints;
+        
+        public MaritimeRouteData(String from, String to, int[] xPoints, int[] yPoints) {
+            this.from = from;
+            this.to = to;
+            this.xPoints = xPoints;
+            this.yPoints = yPoints;
+        }
+    }
+    
+    // Definición de rutas marítimas
+    public static final MaritimeRouteData[] MARITIME_ROUTES = {
+        // Ruta: Britania - Galia Cisalpina (por la costa atlántica y mediterránea)
+        new MaritimeRouteData("Britania", "Belgica", 
+            new int[]{120, 145}, 
+            new int[]{150, 150}),
+        
+        // Ruta: Britania - Galia (por el estrecho)
+        new MaritimeRouteData("Britania", "Galia", 
+            new int[]{90, 90}, 
+            new int[]{170, 210}),
+        
+        // Ruta: Roma - Cirenaica (cruzando el Mediterráneo)
+        new MaritimeRouteData("Magna grecia", "Africa", 
+            new int[]{210, 230}, 
+            new int[]{430, 420}),
+        
+        // Ruta: Galia Cisalpina - Grecia (Adriático)
+        new MaritimeRouteData("Magna Grecia", "Cirene", 
+            new int[]{230, 310}, 
+            new int[]{420, 540}),
+        
+        // Ruta: Asia - Egipto (costa este del Mediterráneo)
+        new MaritimeRouteData("Asia", "Grecia", 
+            new int[]{340, 370}, 
+            new int[]{420, 420}),
+        
     };
     
     private GameConstants() {
-        // Constructor privado para evitar instanciaciÃ³n
+        // Constructor privado para evitar instanciación
     }
 }

@@ -1,5 +1,6 @@
 package com.mycompany.tfm_juan;
 
+import java.awt.Point;
 import java.util.*;
 
 /**
@@ -7,6 +8,8 @@ import java.util.*;
  */
 public class GameState {
     private Map<String, Territory> territories;
+    private List<DecorativeTerritory> decorativeTerritories;
+    private List<MaritimeRoute> maritimeRoutes;
     private Player[] players;
     private int currentPlayerIndex;
     private int numPlayers;
@@ -17,8 +20,12 @@ public class GameState {
         this.numPlayers = numPlayers;
         this.currentPlayerIndex = 0;
         this.territories = new HashMap<>();
+        this.decorativeTerritories = new ArrayList<>();
+        this.maritimeRoutes = new ArrayList<>();
         
         initializePlayers(playerNames);
+        initializeDecorativeTerritories();
+        initializeMaritimeRoutes();
         initializeTerritories();
     }
     
@@ -26,6 +33,27 @@ public class GameState {
         players = new Player[numPlayers];
         for (int i = 0; i < numPlayers; i++) {
             players[i] = new Player(i, playerNames[i], GameConstants.AVAILABLE_COLORS[i]);
+        }
+    }
+    
+    private void initializeDecorativeTerritories() {
+        for (int i = 0; i < GameConstants.DECORATIVE_NAMES.length; i++) {
+            DecorativeTerritory decorative = new DecorativeTerritory(
+                GameConstants.DECORATIVE_NAMES[i],
+                GameConstants.DECORATIVE_X_COORDS[i],
+                GameConstants.DECORATIVE_Y_COORDS[i]
+            );
+            decorativeTerritories.add(decorative);
+        }
+    }
+    
+    private void initializeMaritimeRoutes() {
+        for (GameConstants.MaritimeRouteData routeData : GameConstants.MARITIME_ROUTES) {
+            Point[] points = new Point[routeData.xPoints.length];
+            for (int i = 0; i < routeData.xPoints.length; i++) {
+                points[i] = new Point(routeData.xPoints[i], routeData.yPoints[i]);
+            }
+            maritimeRoutes.add(new MaritimeRoute(routeData.from, routeData.to, points));
         }
     }
     
@@ -77,6 +105,14 @@ public class GameState {
         return territories;
     }
     
+    public List<DecorativeTerritory> getDecorativeTerritories() {
+        return decorativeTerritories;
+    }
+    
+    public List<MaritimeRoute> getMaritimeRoutes() {
+        return maritimeRoutes;
+    }
+    
     public Player[] getPlayers() {
         return players;
     }
@@ -124,5 +160,14 @@ public class GameState {
             }
         }
         return result;
+    }
+    
+    /**
+     * Obtiene los territorios enemigos adyacentes que se pueden atacar desde un territorio
+     * @param from Territorio desde el que se ataca
+     * @return Lista de territorios enemigos adyacentes
+     */
+    public List<Territory> getAttackableNeighbors(Territory from) {
+        return TerritoryAdjacency.getAttackableNeighbors(from, territories);
     }
 }

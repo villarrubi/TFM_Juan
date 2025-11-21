@@ -123,7 +123,7 @@ public class DialogManager {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         buttonPanel.setOpaque(false);
         
-        JButton okButton = UIComponentFactory.createRomanDialogButton("⚔ ACEPTAR", new Color(34, 139, 34));
+        JButton okButton = UIComponentFactory.createRomanDialogButton("✓ ACEPTAR", new Color(34, 139, 34));
         JButton cancelButton = UIComponentFactory.createRomanDialogButton("✖ CANCELAR", new Color(178, 34, 34));
         
         okButton.addActionListener(e -> {
@@ -190,7 +190,6 @@ public class DialogManager {
         gbc.gridwidth = 1;
         
         List<Territory> myTerritories = gameState.getPlayerTerritories(gameState.getCurrentPlayer());
-        List<Territory> enemyTerritories = gameState.getEnemyTerritories(gameState.getCurrentPlayer());
         
         JLabel fromLabel = new JLabel("Atacar desde:");
         fromLabel.setFont(new Font("Trajan Pro", Font.BOLD, 14));
@@ -215,14 +214,42 @@ public class DialogManager {
         gbc.gridy = 2;
         mainPanel.add(toLabel, gbc);
         
+        // El combo de destino se actualiza dinámicamente según el origen seleccionado
         JComboBox<String> toCombo = new JComboBox<>();
-        for (Territory t : enemyTerritories) {
-            toCombo.addItem(t.getName() + " (" + t.getTroops() + " tropas)");
-        }
         toCombo.setFont(new Font("Serif", Font.PLAIN, 14));
         toCombo.setBackground(new Color(245, 222, 179));
         gbc.gridx = 1;
         mainPanel.add(toCombo, gbc);
+        
+        // Lista para mantener referencia a los territorios del combo "toCombo"
+        final List<Territory> availableTargets = new ArrayList<>();
+        
+        // Listener que actualiza los territorios atacables según el territorio de origen
+        fromCombo.addActionListener(e -> {
+            int selectedIndex = fromCombo.getSelectedIndex();
+            if (selectedIndex >= 0) {
+                Territory selectedFrom = myTerritories.get(selectedIndex);
+                
+                // Obtener solo los vecinos enemigos
+                availableTargets.clear();
+                availableTargets.addAll(gameState.getAttackableNeighbors(selectedFrom));
+                
+                // Actualizar el combo de destino
+                toCombo.removeAllItems();
+                if (availableTargets.isEmpty()) {
+                    toCombo.addItem("(No hay territorios adyacentes enemigos)");
+                } else {
+                    for (Territory t : availableTargets) {
+                        toCombo.addItem(t.getName() + " (" + t.getTroops() + " tropas)");
+                    }
+                }
+            }
+        });
+        
+        // Disparar el evento inicial para llenar el combo
+        if (myTerritories.size() > 0) {
+            fromCombo.setSelectedIndex(0);
+        }
         
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         buttonPanel.setOpaque(false);
@@ -232,11 +259,17 @@ public class DialogManager {
         
         JButton attackButtonDialog = UIComponentFactory.createRomanDialogButton("⚔ ATACAR", new Color(165, 42, 42));
         attackButtonDialog.addActionListener(e -> {
-            if (fromCombo.getSelectedIndex() >= 0 && toCombo.getSelectedIndex() >= 0) {
+            if (fromCombo.getSelectedIndex() >= 0 && toCombo.getSelectedIndex() >= 0 
+                && !availableTargets.isEmpty()) {
                 gameState.setAttackFrom(myTerritories.get(fromCombo.getSelectedIndex()));
-                gameState.setAttackTo(enemyTerritories.get(toCombo.getSelectedIndex()));
+                gameState.setAttackTo(availableTargets.get(toCombo.getSelectedIndex()));
                 dialog.dispose();
                 showAttackQuestionDialog();
+            } else {
+                JOptionPane.showMessageDialog(dialog, 
+                    "No hay territorios enemigos adyacentes para atacar desde este territorio.",
+                    "No se puede atacar",
+                    JOptionPane.WARNING_MESSAGE);
             }
         });
         
@@ -272,9 +305,6 @@ public class DialogManager {
         questionDialog.setVisible(true);
     }
     
-    // ESTA ES LA CONTINUACIÓN - Agrégala después del comentario "// Continúa en la siguiente parte..."
-// en la parte 1 del DialogManager, reemplazando el último "}"
-
     private JPanel createQuestionPanel(JDialog dialog, QuestionManager.Question question) {
         JPanel mainPanel = UIComponentFactory.createParchmentPanel();
         mainPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -455,7 +485,7 @@ public class DialogManager {
             mainPanel.add(playerPanel, gbc);
         }
 
-        JButton closeButton = UIComponentFactory.createRomanDialogButton("⚔ ACEPTAR ⚔", new Color(165, 42, 42));
+        JButton closeButton = UIComponentFactory.createRomanDialogButton("✓ ACEPTAR ✓", new Color(165, 42, 42));
         closeButton.addActionListener(e -> 
             SwingUtilities.getWindowAncestor(mainPanel).dispose());
         gbc.gridy = ranking.size() + 2;

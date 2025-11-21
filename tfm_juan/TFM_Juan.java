@@ -72,7 +72,7 @@ public class TFM_Juan extends JPanel {
         attackButton = UIComponentFactory.createRomanButton("⚔ ATACAR ⚔");
         attackButton.addActionListener(e -> dialogManager.showAttackSelectionDialog());
 
-        nextTurnButton = UIComponentFactory.createRomanButton("⚔ SIGUIENTE TURNO ⚔");
+        nextTurnButton = UIComponentFactory.createRomanButton("➤ SIGUIENTE TURNO ➤");
         nextTurnButton.addActionListener(e -> nextTurn());
 
         turnPanel.add(currentTurnPanel);
@@ -136,6 +136,10 @@ public class TFM_Juan extends JPanel {
                 // Invalidar cache de todos los territorios al redimensionar
                 for (Territory t : gameState.getTerritories().values()) {
                     t.invalidateCache();
+                }
+                // Invalidar cache de territorios decorativos
+                for (DecorativeTerritory dt : gameState.getDecorativeTerritories()) {
+                    dt.invalidateCache();
                 }
                 repaint();
             }

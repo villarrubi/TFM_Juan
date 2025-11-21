@@ -28,7 +28,17 @@ public class MapRenderer {
         
         g2d.translate(0, 90);
         
-        // Los territorios ahora usan su propio cache interno
+        // PRIMERO: Dibujar territorios decorativos (fondo)
+        for (DecorativeTerritory dt : gameState.getDecorativeTerritories()) {
+            dt.drawScaled(g2d, scaleX, scaleY);
+        }
+        
+        // SEGUNDO: Dibujar rutas marítimas (encima de territorios decorativos)
+        for (MaritimeRoute route : gameState.getMaritimeRoutes()) {
+            route.drawScaled(g2d, scaleX, scaleY);
+        }
+        
+        // TERCERO: Dibujar territorios conquistables (encima de todo)
         for (Territory t : gameState.getTerritories().values()) {
             t.drawScaled(g2d, t == selectedTerritory, scaleX, scaleY);
         }
